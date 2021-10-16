@@ -1,14 +1,14 @@
 {% extends './base.html' %}
 {% load static %}
-{% block title%}Home{%endblock%}
+{% block title%}Black Market{%endblock%}
 {% block content %}
 
     <main>
         <section class="py-5 text-center container">
-            <div class="row py-lg-5">
+            <div class="row py-lg-3">
             <div class="col-lg-6 col-md-8 mx-auto">
-                <h1 class="h1 fw-bold">Search, Buy, Light'em up!</h1>
-                <p class="lead text-muted">God created all men, but Samuel Colt made them equal.</p>
+                <h1 class="h1 fw-bold">Search - Try - Buy</h1>
+                <p class="lead text-muted">Veritas Vos Liberabit</p>
                 <p>
                 <a href="#" class="btn btn-primary my-2">Let's merchandise</a>
                 </p>
@@ -17,7 +17,7 @@
         </section>
         <div class="album py-5 bg-light">
             <div class="container">
-            <div class="pb-3 h5">All Guns</div>
+            <div class="pb-3 h5">All Products</div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
                 {% for product in products %}
                 <div class="col">
