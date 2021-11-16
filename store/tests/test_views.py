@@ -22,9 +22,9 @@ class TestViewResponses(TestCase):
         self.c = Client()
         self.factory = RequestFactory()
         User.objects.create(username='admin')
-        Category.objects.create(name='django', slug='django')
-        Product.objects.create(category_id=1, title='django beginners', created_by_id=1,
-                               slug='django-beginners', price='20.00', image='django')
+        Category.objects.create(name='category', slug='s-category')
+        Product.objects.create(category_id=1, title='products', created_by_id=1,
+                               slug='s-products', price='20.00', image='images')
 
     def test_url_allowed_hosts(self):
         """
@@ -39,14 +39,14 @@ class TestViewResponses(TestCase):
         """
         Test Product response status
         """
-        response = self.c.get(reverse('store:product_detail', args=['django-beginners']))
+        response = self.c.get(reverse('store:product_detail', args=['s-products']))
         self.assertEqual(response.status_code, 200)
 
     def test_category_detail_url(self):
         """
         Test Category response status
         """
-        response = self.c.get(reverse('store:category_list', args=['django']))
+        response = self.c.get(reverse('store:category_list', args=['s-category']))
         self.assertEqual(response.status_code, 200)
 
     def test_homepage_html(self):
@@ -58,7 +58,7 @@ class TestViewResponses(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_function(self):
-        request = self.factory.get('/django-beginners')
+        request = self.factory.get('/s-products')
         response = product_all(request)
         html = response.content.decode('utf8')
         self.assertIn('<title>Black Market</title>', html)
