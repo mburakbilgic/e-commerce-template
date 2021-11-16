@@ -17,7 +17,7 @@ class TestCategoriesModel(TestCase):
         data = self.data1
         self.assertTrue(isinstance(data, Category))
         self.assertEqual(str(data), 'django')
-    
+
     def test_category_urL(self):
         """
         Test category model slug and URL reverse
@@ -43,7 +43,7 @@ class TestProductsModel(TestCase):
         data = self.data1
         self.assertTrue(isinstance(data, Product))
         self.assertEqual(str(data), 'django')
-    
+
     def test_product_url(self):
         data = self.data1
         url = reverse('store:product_detail', args=[data.slug])

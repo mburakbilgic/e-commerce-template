@@ -12,12 +12,11 @@ from store.views import product_all
 @skip('demonstrating skipping')
 class TestSkip(TestCase):
 
-
     def test_skip_example(self):
         pass
 
-class TestViewResponses(TestCase):
 
+class TestViewResponses(TestCase):
 
     def setUp(self):
         self.c = Client()
@@ -34,7 +33,7 @@ class TestViewResponses(TestCase):
         response = self.c.get('/', HTTP_HOST='noadress.com')
         self.assertEqual(response.status_code, 400)
         response = self.c.get('/', HTPP_HOST='yourdomain.com')
-        self.assertEqual(response.status_code, 200) 
+        self.assertEqual(response.status_code, 200)
 
     def test_product_detail_url(self):
         """
