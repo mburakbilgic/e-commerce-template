@@ -7,50 +7,74 @@
     <main class="pt-5">
         <div class="container">
             <h1 class="h5">Shopping Basket</h1>
-            {% for item in basket %}
-            {%  with product=item.product %}
-            <div data-index="{{ product.id }}" class="row mb-4 border product-item">
-                <div class="col-md-3 col-lg-2 order-md-first bg-light">
-                    <img class="img-fluid mx-auto d-block" width="500px" alt="Responsive image" src="{{ product.image.url }}">
-                </div>
-                <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
-                    <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-reset"><h1 class="h5 pt-2">{{ product.title }}</h1></a>
-                    <div class="border">
-                        <div class="col border">
-                            <div class="row-p3">
-                                <div class="col text"><span class="h6 fw-bold"> £{{ product.price }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="row p-3">
-                            <div class="col-12">
-                                <label for="select">Qty</label>
-                                <select id="select{{ product.id }}">
-                                    <option selected>
-                                        {{ item.qty }}
-                                    </option>
-                                    <option value="">1</option>
-                                    <option value="">2</option>
-                                    <option value="">3</option>
-                                    <option value="">4</option>
-                                </select>
-                                <button type="button" id="update-button" data-index="{{ product.id }}" class="btn btn-outline-secondary btn-sm update-button">Update</button>
-                                <button type="button" id="delete-button" data-index="{{ product.id }}" class="btn btn-outline-secondary btn-sm delete-button">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="basket-empty" class="{% if basket|length %}d-none{% endif %} py-5 text-center text-muted">
+                Your basket is empty.
             </div>
-            {% endwith %}
-            {% endfor %}
-        <div class="col-12 text-end">
-            <div class="h6 fw-bold">Sub Total: £<div id="subtotal" class="d-inline-flex">{{ basket.get_total_price }}</div></div>
-        </div>
+            <div id="basket-items" class="{% if not basket|length %}d-none{% endif %}">
+                {% for item in basket %}
+                {%  with product=item.product %}
+                <div data-index="{{ product.id }}" class="row mb-4 border product-item">
+                    <div class="col-md-3 col-lg-2 order-md-first bg-light">
+                        <img class="img-fluid mx-auto d-block" width="500" alt="{{ product.title }}" src="{{ product.image.url }}">
+                    </div>
+                    <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
+                        <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-reset"><h1 class="h5 pt-2">{{ product.title }}</h1></a>
+                        <div class="border p-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <span class="h6 fw-bold">£<span class="item-total" data-index="{{ product.id }}">{{ item.total_price|floatformat:2 }}</span></span>
+                                    <div class="small text-muted item-breakdown" data-index="{{ product.id }}">
+                                        {% if item.qty > 1 %}
+                                            {{ item.qty }} × £{{ item.price|floatformat:2 }} each
+                                        {% else %}
+                                            £{{ item.price|floatformat:2 }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="me-2 mb-0" for="qty{{ product.id }}">Qty</label>
+                                    <input
+                                        id="qty{{ product.id }}"
+                                        data-index="{{ product.id }}"
+                                        class="form-control form-control-sm w-auto qty-input"
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        inputmode="numeric"
+                                        value="{{ item.qty }}"
+                                    >
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-outline-secondary btn-sm update-button">Update</button>
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-outline-danger btn-sm delete-button">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% endfor %}
+            </div>
+            <div id="basket-summary" class="col-12 text-end {% if not basket|length %}d-none{% endif %}">
+                <div class="h6 fw-bold">Sub Total: £<span id="subtotal" class="d-inline-flex">{{ basket.get_total_price|floatformat:2 }}</span></div>
+            </div>
         </div>
     </main>
 
     <script>
+
+    function toggleEmptyState(isEmpty) {
+        const emptyEl = document.getElementById('basket-empty');
+        const itemsEl = document.getElementById('basket-items');
+        const summaryEl = document.getElementById('basket-summary');
+        if (emptyEl) {
+            emptyEl.classList.toggle('d-none', !isEmpty);
+        }
+        if (itemsEl) {
+            itemsEl.classList.toggle('d-none', isEmpty);
+        }
+        if (summaryEl) {
+            summaryEl.classList.toggle('d-none', isEmpty);
+        }
+    }
 
     $(document).on('click', '.delete-button', function (e) {
         e.preventDefault();
@@ -60,13 +84,16 @@
             url: '{% url "basket:basket_delete" %}',
             data: {
                 productid: $(this).data('index'),
-                csfrmiddlewaretoken: "{{csrf_token}}",
+                csrfmiddlewaretoken: "{{ csrf_token }}",
                 action: 'post'
             },
             success: function (json) {
                 $('.product-item[data-index="'+ prodid +'"]').remove();
-                document.getElementById("subtotal").innerHTML = json.subtotal;
-                document.getElementById("basket-qty").innerHTML = json.qty
+                document.getElementById('subtotal').innerHTML = json.subtotal;
+                document.getElementById('basket_qty').innerHTML = json.qty;
+                if (parseInt(json.qty, 10) === 0) {
+                    toggleEmptyState(true);
+                }
             },
             error: function (xhr, errmsg, err) {
 
@@ -77,18 +104,40 @@
     $(document).on('click', '.update-button', function (e) {
         e.preventDefault();
         var prodid = $(this).data('index');
+        var input = $('#qty' + prodid);
+        var quantity = parseInt(input.val(), 10);
+        if (isNaN(quantity)) {
+            quantity = 1;
+        }
         $.ajax({
             type: 'POST',
             url: '{% url "basket:basket_update" %}',
             data: {
                 productid: $(this).data('index'),
-                productqty: $('#select'+ prodid +' option:selected').text(),
-                csfrmiddlewaretoken: "{{csrf_token}}",
+                productqty: quantity,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
                 action: 'post'
             },
             success: function (json) {
-                document.getElementById("basket-qty").innerHTML = json.qty
-                document.getElementById("subtotal").innerHTML = json.subtotal
+                document.getElementById('basket_qty').innerHTML = json.qty;
+                document.getElementById('subtotal').innerHTML = json.subtotal;
+                if (json.removed) {
+                    $('.product-item[data-index="'+ prodid +'"]').remove();
+                    if (parseInt(json.qty, 10) === 0) {
+                        toggleEmptyState(true);
+                    }
+                    return;
+                }
+                input.val(json.item_qty);
+                $('.item-total[data-index="' + prodid + '"]').text(json.item_total);
+                var breakdown = $('.item-breakdown[data-index="' + prodid + '"]');
+                if (breakdown.length) {
+                    if (parseInt(json.item_qty, 10) > 1) {
+                        breakdown.text(json.item_qty + ' × £' + json.item_price + ' each');
+                    } else {
+                        breakdown.text('£' + json.item_price);
+                    }
+                }
             },
             error: function (xhr, errmsg, err) {
 
