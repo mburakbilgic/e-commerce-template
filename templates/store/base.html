@@ -9,6 +9,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+         <style>
+            .dropdown-menu .dropdown-submenu {
+                position: relative;
+            }
+
+            .dropdown-menu .dropdown-submenu .collapse {
+                padding-top: 0.25rem;
+            }
+
+            .dropdown-menu .dropdown-submenu .collapse .dropdown-item {
+                padding-left: 1.5rem;
+            }
+
+            .category-toggle-icon {
+                font-size: 0.9rem;
+                transition: transform 0.2s ease;
+            }
+
+            .category-toggle[aria-expanded="true"] .category-toggle-icon {
+                transform: rotate(90deg);
+            }
+        </style>
 </head>
 
 <body>
@@ -30,9 +52,7 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="{% url "store:product_all" %}">All</a></li>
                                 {% for cat in categories %}
-                                <li {% if category.slug == cat.slug %}class="selected" {% endif %}>
-                                    <a class="dropdown-item" href="{{ cat.get_absolute_url }}">{{ cat.name|title }}</a>
-                                </li>
+                                {% include "store/includes/category_menu.html" with category=cat current_category=category %}
                                 {% endfor %}
                             </ul>
                         </li>
@@ -65,5 +85,55 @@
         </nav>
     </header>
     <div id="content">{% block content %} {% endblock %}</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof bootstrap === 'undefined' || typeof bootstrap.Collapse === 'undefined') {
+                return;
+            }
+
+            document.querySelectorAll('.category-toggle').forEach(function (toggle) {
+                var targetSelector = toggle.getAttribute('data-bs-target');
+                if (!targetSelector) {
+                    return;
+                }
+
+                var targetEl = document.querySelector(targetSelector);
+                if (!targetEl) {
+                    return;
+                }
+
+                var icon = toggle.querySelector('.category-toggle-icon');
+
+                toggle.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    var collapseInstance = bootstrap.Collapse.getOrCreateInstance(targetEl, {
+                        toggle: false
+                    });
+
+                    if (targetEl.classList.contains('show')) {
+                        collapseInstance.hide();
+                    } else {
+                        collapseInstance.show();
+                    }
+                });
+
+                targetEl.addEventListener('shown.bs.collapse', function () {
+                    toggle.setAttribute('aria-expanded', 'true');
+                    if (icon) {
+                        icon.textContent = '–';
+                    }
+                });
+
+                targetEl.addEventListener('hidden.bs.collapse', function () {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    if (icon) {
+                        icon.textContent = '☰';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
