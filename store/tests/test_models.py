@@ -31,10 +31,16 @@ class TestCategoriesModel(TestCase):
 class TestProductsModel(TestCase):
 
     def setUp(self):
-        Category.objects.create(name='category', slug='s-category')
+        self.category = Category.objects.create(name='category', slug='s-category')
         User.objects.create(username='admin')
-        self.data1 = Product.objects.create(category_id=1, title='products', created_by_id=1,
-                               slug='s-products', price='20.00', image='images')
+        self.data1 = Product.objects.create(
+            category=self.category,
+            title='products',
+            created_by_id=1,
+            slug='s-products',
+            price='20.00',
+            image='images',
+        )
 
     def test_product_model_entry(self):
         """
@@ -46,8 +52,12 @@ class TestProductsModel(TestCase):
 
     def test_product_url(self):
         data = self.data1
-        url = reverse('store:product_detail', args=[data.slug])
-        self.assertEqual(url, '/s-products/')
-        response = self.client.post(
-            reverse('store:product_detail', args=[data.slug]))
-        self.assertEqual(response.status_code, 200)
+        url = reverse(
+            'store:product_detail',
+            kwargs={
+                'category_path': data.category.get_full_slug(),
+                'slug': data.slug,
+            },
+        )
+        self.assertEqual(url, '/shop/s-category/s-products/')
+        response = self.client.post(url)
