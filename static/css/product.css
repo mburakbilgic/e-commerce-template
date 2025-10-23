@@ -1,0 +1,23 @@
+.product-page {
+    background-color: #1e1f22;
+    border-radius: 10px;
+}
+
+.product-page img {
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.product-purchase {
+    background-color: #2a2c30;
+    border: 1px solid #3a3b3f;
+}
+
+.product-purchase .form-text {
+    font-size: 0.8rem;
+}
+
+#quantity-input {
+    width: 70px;
+}

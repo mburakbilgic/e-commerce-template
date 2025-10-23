@@ -1,82 +1,74 @@
 {% extends "store/base.html" %}
 {% load static %}
-{% block title %}
-{{ product.name }}
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/product.css' %}">
 {% endblock %}
+
 {% block content %}
-<div class="container">
-    <main class="pt-5">
-        <div class="row g-3">
-            <div class="col-md-5 col-lg-5 order-md-first bg-light">
-                <img class="img-fluid mx-auto d-block" width="1000px" alt="Responsive image" src="{{ product.image.url }}">
-            </div>
-            <div class="col-md-7 col-lg-7 ps-md-3 ps-lg-5">
-                <h1 class="mb-0 h4">{{ product.title }}</h1>
-                <p><span class="lead">{{ product.author }}</span> (Author)</p>
-                {% if product.brand %}
-                <p><strong>Brand:</strong> {{ product.brand }}</p>
-                {% endif %}
-                {% if product.summary %}
-                <p>{{ product.summary }}</p>
-                {% endif %}
-                {% if product.details %}
-                <div class="mt-3">
-                    <h2 class="h6">Details</h2>
-                    <p class="mb-0">{{ product.details }}</p>
+    <div class="container product-page py-5">
+        <main>
+            <div class="row g-4 align-items-start">
+                <!-- Product Image -->
+                <div class="col-md-5 bg-dark-subtle rounded-3 p-3">
+                    <img class="img-fluid mx-auto d-block rounded" alt="{{ product.title }}" src="{{ product.image.url }}">
                 </div>
-                {% endif %}
-                <div class="border">
-                    <div class="col border-bottom">
-                        <div class="row p-3">
-                            <div class="col-6">Price</div>
-                            <div class="col-6 text-end"><span class="h4 fw-bold">£{{ product.price }}</span></div>
+
+                <!-- Product Details -->
+                <div class="col-md-7 ps-md-4 text-light">
+                    <h1 class="h3 fw-bold">{{ product.title }}</h1>
+                    <p class="text-secondary mb-2"><span class="fw-semibold">{{ product.author }}</span> <small>(Author)</small></p>
+
+                    {% if product.brand %}
+                    <p><strong>Brand:</strong> {{ product.brand }}</p>
+                    {% endif %}
+
+                    {% if product.summary %}
+                    <p>{{ product.summary }}</p>
+                    {% endif %}
+
+                    {% if product.details %}
+                    <div class="mt-3">
+                        <h2 class="h6 text-uppercase text-muted">Details</h2>
+                        <p class="mb-0">{{ product.details }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Pricing & Add to Basket -->
+                    <div class="product-purchase border rounded-3 mt-4">
+                        <div class="border-bottom p-3 d-flex justify-content-between">
+                            <span>Price</span>
+                            <span class="h4 fw-bold text-success">£{{ product.price }}</span>
+                        </div>
+
+                        <div class="p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <label for="quantity-input" class="form-label small">Quantity</label>
+                                <div class="input-group input-group-sm w-auto">
+                                    <button type="button" class="btn btn-outline-light" id="decrement-btn">−</button>
+                                    <input
+                                        id="quantity-input"
+                                        type="text"
+                                        class="form-control text-center bg-dark text-light border-secondary"
+                                        value="{{ quantity_limits.min }}"
+                                        inputmode="numeric"
+                                        data-min="{{ quantity_limits.min }}"
+                                        data-max="{{ quantity_limits.max }}"
+                                        data-step="{{ quantity_limits.step }}">
+                                    <button type="button" class="btn btn-outline-light" id="increment-btn">+</button>
+                                </div>
+                                <div class="form-text text-muted">Stock: {{ quantity_limits.min }}–{{ quantity_limits.max }}</div>
+                            </div>
+                            <button type="button" id="add-button" value="{{ product.id }}" class="btn btn-success btn-sm">Pick that beauty</button>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="row p-3">
-                            <div class="col-6">
-                                <label for="select">Qty</label>
-                                <select id="select" class="form-select form-select-sm w-auto">
-                                    {% for qty_option in quantity_range %}
-                                        <option value="{{ qty_option }}">{{ qty_option }}</option>
-                                    {% endfor %}
-                                </select>
-
-                            </div>
-                            <div class="col-6 text-end">
-                            <button type="button" id="add-button" value="{{ product.id }}" class="btn btn-secondary btn-sm">Pick that beauty</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
+{% endblock %}
 
-</div>
-
-<script>
-
-    $(document).on('click', '#add-button', function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url: '{% url "basket:basket_add" %}',
-            data: {
-                productid: $('#add-button').val(),
-                productqty: $('#select').val(),
-                csrfmiddlewaretoken: "{{ csrf_token }}",
-                action: 'post'
-            },
-            success: function (json) {
-                document.getElementById('basket_qty').innerHTML = json.qty
-            },
-            error: function (xhr, errmsg, err) {
-
-            }
-        })
-    })
-
-</script>
-
+{% block extra_js %}
+    <script src="{% static 'js/product.js' %}"></script>
 {% endblock %}
