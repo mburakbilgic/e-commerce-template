@@ -1,0 +1,56 @@
+.basket-page {
+    background-color: #1e1f22;
+    min-height: 100vh;
+    border-radius: 10px;
+    color: #eaeaea;
+}
+
+.basket-page h1 {
+    color: #ffffff;
+}
+
+.basket-item-box {
+    background-color: #2a2c30;
+    border: 1px solid #333;
+}
+
+.qty-input {
+    width: 60px;
+    text-align: center;
+    background-color: #1e1f22;
+    border: 1px solid #555;
+    color: #fff;
+    border-radius: 4px;
+}
+
+/* Delete & Update buttons */
+.update-button, .delete-button {
+    min-width: 70px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.update-button:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.delete-button:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Empty basket */
+#basket-empty {
+    color: #999;
+    font-style: italic;
+}
+
+/* Smooth removal animation */
+.product-item {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.product-item.removed {
+    opacity: 0;
+    transform: translateX(-10px);
+}
