@@ -1,36 +1,48 @@
-{% extends 'store/base.html' %}
+{% extends "store/base.html" %}
 {% load static %}
-{% block title%}Home{%endblock%}
-{% block content %}
+{% block title %}{{ category.name|title }} | Black Market{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/category.css' %}">
+{% endblock %}
 
-    <main>
-        <div class="album py-5 bg-light">
-            <div class="container">
-            <nav aria-label="breadcrumb">
+{% block content %}
+    <main class="category-page py-5">
+        <div class="container">
+
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'store:product_all' %}">All</a></li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'store:product_all' %}" class="text-decoration-none text-light">All</a>
+                    </li>
                     {% for crumb in breadcrumbs|slice:':-1' %}
-                        <li class="breadcrumb-item"><a href="{{ crumb.get_absolute_url }}">{{ crumb.name|title }}</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ crumb.get_absolute_url }}" class="text-decoration-none text-light">{{ crumb.name|title }}</a>
+                        </li>
                     {% endfor %}
-                    <li class="breadcrumb-item active" aria-current="page">{{ category.name|title }}</li>
+                    <li class="breadcrumb-item active text-light" aria-current="page">{{ category.name|title }}</li>
                 </ol>
             </nav>
-            <div class="pb-3 h5">{{ category.name|title }}</div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+
+            <!-- Title -->
+            <div class="pb-3 h3 fw-bold text-light">{{ category.name|title }}</div>
+
+            <!-- Product Grid -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
                 {% if products %}
                     {% for product in products %}
                     <div class="col">
-                    <div class="card shadow-sm">
-                        <img class="img-fluid" alt="Responsive image" src="{{ product.image.url }}">
-                        <div class="card-body">
-                        <p class="card-text">
-                            <a class="text-dark text-decoration-none" href="{{ product.get_absolute_url }}">{{ product.title }}</a>
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">{{ product.summary }}</small>
+                        <div class="card shadow-sm h-100 border-0 product-card">
+                            <img class="img-fluid" alt="{{ product.title }}" src="{{ product.image.url }}">
+                            <div class="card-body bg-dark-subtle rounded-bottom">
+                                <p class="card-text mb-2">
+                                    <a class="text-light text-decoration-none fw-semibold" href="{{ product.get_absolute_url }}">
+                                        {{ product.title }}
+                                    </a>
+                                </p>
+                                <small class="text-muted d-block">{{ product.summary }}</small>
+                            </div>
                         </div>
-                        </div>
-                    </div>
                     </div>
                     {% endfor %}
                 {% else %}
@@ -41,7 +53,10 @@
                     </div>
                 {% endif %}
             </div>
-            </div>
         </div>
     </main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/category.js' %}"></script>
 {% endblock %}
