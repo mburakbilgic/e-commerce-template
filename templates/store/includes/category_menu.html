@@ -1,37 +1,37 @@
 {% with children=category.children.all %}
-    {% if children %}
-        <li class="dropdown-submenu">
-            <button
-                class="dropdown-item d-flex align-items-center justify-content-between w-100 text-start category-toggle"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#category-collapse-{{ category.pk }}"
-                aria-controls="category-collapse-{{ category.pk }}"
-                aria-expanded="false"
-            >
-                <span>{{ category.name|title }}</span>
-                <span class="category-toggle-icon ms-2" aria-hidden="true">&#9776;</span>
-            </button>
-            <div class="collapse" id="category-collapse-{{ category.pk }}">
-                <ul class="list-unstyled ps-3 mb-0">
-                    <li>
-                        <a class="dropdown-item{% if current_category and current_category.pk == category.pk %} active{% endif %}"
-                           href="{{ category.get_absolute_url }}">
-                            {{ category.name|title }}
-                        </a>
-                    </li>
-                    {% for child in children %}
-                        {% include "store/includes/category_menu.html" with category=child current_category=current_category %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </li>
-    {% else %}
-        <li>
-            <a class="dropdown-item{% if current_category and current_category.pk == category.pk %} active{% endif %}"
+  {% if children %}
+    <li class="dropdown-submenu">
+      <button
+        class="dropdown-item d-flex align-items-center justify-content-between w-100 text-start category-toggle text-light"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#category-collapse-{{ category.pk }}"
+        aria-controls="category-collapse-{{ category.pk }}"
+        aria-expanded="false"
+      >
+        <span>{{ category.name|title }}</span>
+        <span class="category-toggle-icon ms-2 text-secondary">&#9776;</span>
+      </button>
+      <div class="collapse" id="category-collapse-{{ category.pk }}">
+        <ul class="list-unstyled ps-3 mb-0">
+          <li>
+            <a class="dropdown-item text-light{% if current_category and current_category.pk == category.pk %} active{% endif %}"
                href="{{ category.get_absolute_url }}">
-                {{ category.name|title }}
+               {{ category.name|title }}
             </a>
-        </li>
-    {% endif %}
+          </li>
+          {% for child in children %}
+            {% include "store/includes/category_menu.html" with category=child current_category=current_category %}
+          {% endfor %}
+        </ul>
+      </div>
+    </li>
+  {% else %}
+    <li>
+      <a class="dropdown-item text-light{% if current_category and current_category.pk == category.pk %} active{% endif %}"
+         href="{{ category.get_absolute_url }}">
+         {{ category.name|title }}
+      </a>
+    </li>
+  {% endif %}
 {% endwith %}
