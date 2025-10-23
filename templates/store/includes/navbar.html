@@ -1,0 +1,53 @@
+<header class="site-header sticky-top py-1 bg-dark">
+  <nav class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+    <!-- Logo -->
+    <a class="py-2 text-light text-decoration-none" href="/" aria-label="Black Market">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="d-block mx-auto" role="img" viewBox="0 0 24 24">
+        <title>Black Market</title>
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"/>
+      </svg>
+    </a>
+
+    <!-- Navbar links -->
+    <div class="d-flex gap-4 align-items-center nav-links">
+
+      <a class="nav-link-custom text-light text-decoration-none d-none d-md-inline-block" href="/">Home</a>
+
+      <!-- Products Dropdown -->
+      <div class="dropdown">
+        <a
+          href="#"
+          class="nav-link-custom text-light text-decoration-none dropdown-toggle d-none d-md-inline-block"
+          id="productDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Products
+        </a>
+        <ul class="dropdown-menu bg-dark text-light border-0 p-2" aria-labelledby="productDropdown">
+          <li>
+            <a class="dropdown-item text-light" href="{% url 'store:product_all' %}">All Products</a>
+          </li>
+          <li><hr class="dropdown-divider bg-secondary"></li>
+          {% for cat in categories %}
+            {% include "store/includes/category_menu.html" with category=cat current_category=category %}
+          {% endfor %}
+        </ul>
+      </div>
+
+      <a class="nav-link-custom text-light text-decoration-none d-none d-md-inline-block" href="#">Support</a>
+      <a class="nav-link-custom text-light text-decoration-none d-none d-md-inline-block" href="#">Contact</a>
+
+      <a
+        href="{% url 'basket:basket_summary' %}"
+        class="nav-link-custom text-light text-decoration-none d-none d-md-inline-block d-flex align-items-center"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-basket3 me-2" viewBox="0 0 16 16">
+          <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H.5a.5.5 0 0 1-.5-.5v-1A.5.5 0 0 1 .5 6h1.717L5.07 1.243a.5.5 0 0 1 .686-.172zM3.394 15l-1.48-6h-.97l1.525 6.426a.75.75 0 0 0 .729.574h9.606a.75.75 0 0 0 .73-.574L15.056 9h-.972l-1.479 6h-9.21z"/>
+        </svg>
+        Basket (<span id="basket_qty">{{ basket|length }}</span>)
+      </a>
+    </div>
+  </nav>
+</header>
